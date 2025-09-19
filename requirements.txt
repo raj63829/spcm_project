@@ -3,6 +3,7 @@ setuptools>=65.0
 wheel
 cmake
 gunicorn
+whitenoise[brotli]
 Django==4.2.7
 djangorestframework==3.14.0
 requests==2.31.0
