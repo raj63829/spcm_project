@@ -1,0 +1,6 @@
+npm run build
+
+
+npm run electron-dev
+
+npm run electron-dev

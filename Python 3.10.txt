@@ -1,0 +1,12 @@
+Python 3.10
+
+SDP\scripts>py train_models.py
+
+python manage.py makemigrations prediction
+
+python manage.py migrate
+
+
+python manage.py runserver
+
+

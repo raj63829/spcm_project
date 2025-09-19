@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+
+{% block title %}My Portfolios - SPCM{% endblock %}
+
+{% block content %}
+<!-- Portfolio Header -->
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h1>
+            <i class="fas fa-wallet me-2"></i>My Portfolios
+        </h1>
+        <p class="text-muted">Manage your investment portfolios and track performance</p>
+    </div>
+    <div class="col-md-4 text-md-end">
+        <a href="{% url 'create_portfolio' %}" class="btn btn-primary">
+            <i class="fas fa-plus me-2"></i>Create Portfolio
+        </a>
+    </div>
+</div>
+
+<!-- Portfolios List -->
+{% if portfolios %}
+    <div class="row">
+        {% for portfolio in portfolios %}
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card card-hover h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <i class="fas fa-briefcase me-2"></i>{{ portfolio.name }}
+                        </h5>
+                        {% if portfolio.description %}
+                            <p class="card-text text-muted">{{ portfolio.description|truncatechars:100 }}</p>
+                        {% endif %}
+                        
+                        <div class="row text-center mb-3">
+                            <div class="col-6">
+                                <h4 class="text-primary">${{ portfolio.total_value|floatformat:2 }}</h4>
+                                <small class="text-muted">Total Value</small>
+                            </div>
+                            <div class="col-6">
+                                <h4 class="{% if portfolio.total_gain_loss >= 0 %}text-success{% else %}text-danger{% endif %}">
+                                    {% if portfolio.total_gain_loss >= 0 %}+{% endif %}${{ portfolio.total_gain_loss|floatformat:2 }}
+                                </h4>
+                                <small class="text-muted">Gain/Loss</small>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted">
+                                <i class="fas fa-chart-pie me-1"></i>{{ portfolio.positions.count }} positions
+                            </small>
+                            <small class="text-muted">
+                                <i class="fas fa-calendar me-1"></i>{{ portfolio.created_at|date:"M d, Y" }}
+                            </small>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-transparent">
+                        <a href="{% url 'portfolio_detail' portfolio.id %}" class="btn btn-primary w-100">
+                            <i class="fas fa-eye me-2"></i>View Details
+                        </a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body text-center py-5">
+                    <i class="fas fa-wallet fa-4x text-muted mb-4"></i>
+                    <h3 class="text-muted">No Portfolios Yet</h3>
+                    <p class="text-muted mb-4">Create your first portfolio to start tracking your investments</p>
+                    <a href="{% url 'create_portfolio' %}" class="btn btn-primary btn-lg">
+                        <i class="fas fa-plus me-2"></i>Create Your First Portfolio
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endif %}
+{% endblock %}

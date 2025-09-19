@@ -1,0 +1,116 @@
+Successfully fetched stock info for AAPL
+No time series data found for AAPL
+Technical indicators calculated for AAPL
+NewsAPI error for AAPL: Your API key is invalid or incorrect. Check your key, or go to https://newsapi.org to create a free API key.
+Calculated sentiment for AAPL on 2025-06-30
+Generated recommendation for AAPL: HOLD (50.0%)
+Successfully fetched stock info for TSLA
+No time series data found for TSLA
+Technical indicators calculated for TSLA
+NewsAPI error for TSLA: Your API key is invalid or incorrect. Check your key, or go to https://newsapi.org to create a free API key.
+Calculated sentiment for TSLA on 2025-06-30
+Generated recommendation for TSLA: HOLD (50.0%)
+Successfully fetched stock info for GOOGL
+No time series data found for GOOGL
+Technical indicators calculated for GOOGL
+NewsAPI error for GOOGL: Your API key is invalid or incorrect. Check your key, or go to https://newsapi.org to create a free API key.
+Calculated sentiment for GOOGL on 2025-06-30
+Generated recommendation for GOOGL: HOLD (50.0%)
+No quote data found for AAPL
+No quote data found for AAPL
+No quote data found for GOOGL
+No quote data found for AAPL
+Successfully fetched stock info for TATA
+No quote data found for TATA
+Network error fetching quote for AAPL: HTTPSConnectionPool(host='www.alphavantage.co', port=443): Read timed out. (read timeout=10)
+No quote data found for TATA
+No quote data found for AAPL
+Found existing stock AAPL
+Generated demo historical data for AAPL
+Technical indicators calculated for AAPL
+Generated demo news articles for AAPL
+Calculated sentiment for AAPL on 2025-06-30
+Generated recommendation for AAPL: HOLD (54.5%)
+Found existing stock TSLA
+Generated demo historical data for TSLA
+Technical indicators calculated for TSLA
+Generated demo news articles for TSLA
+Calculated sentiment for TSLA on 2025-06-30
+Generated recommendation for TSLA: HOLD (59.6%)
+Found existing stock GOOGL
+Generated demo historical data for GOOGL
+Technical indicators calculated for GOOGL
+Generated demo news articles for GOOGL
+Calculated sentiment for GOOGL on 2025-06-30
+Generated recommendation for GOOGL: SELL (84.0%)
+Found existing stock AAPL
+Generated demo historical data for AAPL
+Technical indicators calculated for AAPL
+Generated demo news articles for AAPL
+Calculated sentiment for AAPL on 2025-07-02
+Generated recommendation for AAPL: BUY (90%)
+Created demo stock data for TSLA
+Generated demo historical data for TSLA
+Technical indicators calculated for TSLA
+Generated demo news articles for TSLA
+Calculated sentiment for TSLA on 2025-07-02
+Generated recommendation for TSLA: SELL (84.0%)
+Created demo stock data for GOOGL
+Generated demo historical data for GOOGL
+Technical indicators calculated for GOOGL
+Generated demo news articles for GOOGL
+Calculated sentiment for GOOGL on 2025-07-02
+Generated recommendation for GOOGL: BUY (90%)
+Found existing stock AAPL
+Generated demo historical data for AAPL
+Technical indicators calculated for AAPL
+Generated demo news articles for AAPL
+Calculated sentiment for AAPL on 2025-07-04
+Generated recommendation for AAPL: HOLD (50.0%)
+Found existing stock TSLA
+Generated demo historical data for TSLA
+Technical indicators calculated for TSLA
+Generated demo news articles for TSLA
+Calculated sentiment for TSLA on 2025-07-04
+Generated recommendation for TSLA: HOLD (50.0%)
+Found existing stock GOOGL
+Generated demo historical data for GOOGL
+Technical indicators calculated for GOOGL
+Generated demo news articles for GOOGL
+Calculated sentiment for GOOGL on 2025-07-04
+Generated recommendation for GOOGL: BUY (90%)
+Found existing stock AAPL
+Generated demo historical data for AAPL
+Technical indicators calculated for AAPL
+Generated demo news articles for AAPL
+Calculated sentiment for AAPL on 2025-07-04
+Generated recommendation for AAPL: BUY (90%)
+Found existing stock TSLA
+Generated demo historical data for TSLA
+Technical indicators calculated for TSLA
+Generated demo news articles for TSLA
+Calculated sentiment for TSLA on 2025-07-04
+Generated recommendation for TSLA: BUY (90%)
+Found existing stock GOOGL
+Generated demo historical data for GOOGL
+Technical indicators calculated for GOOGL
+Generated demo news articles for GOOGL
+Calculated sentiment for GOOGL on 2025-07-04
+Generated recommendation for GOOGL: HOLD (50.0%)
+Created demo stock data for META
+Generated demo historical data for META
+Technical indicators calculated for META
+Generated demo news articles for META
+Calculated sentiment for META on 2025-07-04
+Generated recommendation for META: HOLD (56.0%)
+Created demo stock data for AMZN
+Generated demo historical data for AMZN
+Technical indicators calculated for AMZN
+Generated demo news articles for AMZN
+Calculated sentiment for AMZN on 2025-07-04
+Generated recommendation for AMZN: HOLD (50.0%)
+Generated demo historical data for AAPL
+Technical indicators calculated for AAPL
+Generated demo news articles for AAPL
+Calculated sentiment for AAPL on 2025-09-19
+Generated recommendation for AAPL: HOLD (52.0%)

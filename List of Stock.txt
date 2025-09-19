@@ -1,0 +1,71 @@
+List of major tech and growth stocks (including AAPL, TSLA, etc.) often followed by investors:
+
+---
+
+ 🏢 Mega-Cap Tech Stocks
+
+| Ticker | Company                        |
+| ------ | ------------------------------ |
+| AAPL   | Apple Inc.                     |
+| MSFT   | Microsoft Corp.                |
+| GOOGL  | Alphabet Inc. (Google)         |
+| AMZN   | Amazon.com Inc.                |
+| META   | Meta Platforms Inc. (Facebook) |
+| NVDA   | NVIDIA Corp.                   |
+| TSLA   | Tesla Inc.                     |
+
+---
+
+ 🌐 Other Large-Cap Tech & Internet**
+
+| Ticker | Company                |
+| ------ | ---------------------- |
+| NFLX   | Netflix Inc.           |
+| AMD    | Advanced Micro Devices |
+| INTC   | Intel Corp.            |
+| CRM    | Salesforce Inc.        |
+| ORCL   | Oracle Corp.           |
+| IBM    | IBM Corp.              |
+| PYPL   | PayPal Holdings        |
+| SHOP   | Shopify Inc.           |
+
+---
+
+📱 Social Media & Communication
+
+| Ticker | Company                        |
+| ------ | ------------------------------ |
+| SNAP   | Snap Inc. (Snapchat)           |
+| PINS   | Pinterest Inc.                 |
+| TWTR\* | Twitter Inc. (now X – private) |
+| ZM     | Zoom Video Comm.               |
+| DIS    | Disney (has tech/media blend)  |
+
+---
+
+ 🧠 AI / Cloud / Data
+
+| Ticker | Company               |
+| ------ | --------------------- |
+| SNOW   | Snowflake Inc.        |
+| PLTR   | Palantir Technologies |
+| DDOG   | Datadog Inc.          |
+| U      | Unity Software        |
+| NET    | Cloudflare Inc.       |
+
+---
+
+ 🔧 Hardware & Semiconductors
+
+| Ticker | Company                    |
+| ------ | -------------------------- |
+| AVGO   | Broadcom Inc.              |
+| QCOM   | Qualcomm Inc.              |
+| MU     | Micron Technology          |
+| ASML   | ASML Holding (Netherlands) |
+| TSM    | Taiwan Semi Mfg.           |
+
+---
+
+python manage.py fetch_stock_data AAPL TSLA GOOGL AMZN META
+

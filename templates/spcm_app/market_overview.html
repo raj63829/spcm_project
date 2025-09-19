@@ -1,0 +1,274 @@
+{% extends 'base.html' %}
+
+{% block title %}Market Overview - SPCM{% endblock %}
+
+{% block content %}
+<!-- Market Overview Header -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card bg-gradient-primary text-white">
+            <div class="card-body">
+                <h1 class="mb-2">
+                    <i class="fas fa-globe me-2"></i>Market Overview
+                </h1>
+                <p class="mb-0">Real-time market sentiment and stock analysis</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Market Metrics -->
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card text-center h-100">
+            <div class="card-body">
+                <i class="fas fa-heart fa-3x mb-3 sentiment-{% if market_sentiment > 0.1 %}positive{% elif market_sentiment < -0.1 %}negative{% else %}neutral{% endif %}"></i>
+                <h5 class="card-title">Market Sentiment</h5>
+                <h2 class="sentiment-{% if market_sentiment > 0.1 %}positive{% elif market_sentiment < -0.1 %}negative{% else %}neutral{% endif %}">
+                    {{ market_sentiment|floatformat:1|default:"0.0" }}
+                </h2>
+                <p class="card-text">
+                    {% if market_sentiment > 0.1 %}
+                        <span class="badge bg-success">Positive</span>
+                    {% elif market_sentiment < -0.1 %}
+                        <span class="badge bg-danger">Negative</span>
+                    {% else %}
+                        <span class="badge bg-warning">Neutral</span>
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card text-center h-100">
+            <div class="card-body">
+                <i class="fas fa-newspaper fa-3x text-info mb-3"></i>
+                <h5 class="card-title">News Mentions</h5>
+                <h2 class="text-primary">{{ total_mentions|default:"0" }}</h2>
+                <p class="card-text">Total mentions today</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card text-center h-100">
+            <div class="card-body">
+                <i class="fas fa-chart-line fa-3x text-success mb-3"></i>
+                <h5 class="card-title">Active Stocks</h5>
+                <h2 class="text-primary">{{ top_stocks|length }}</h2>
+                <p class="card-text">Stocks being monitored</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recommendations Summary -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-robot me-2"></i>Today's AI Recommendations
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if recommendations_summary %}
+                    <div class="row text-center">
+                        {% for rec in recommendations_summary %}
+                            <div class="col-md-4 mb-3">
+                                <div class="card recommendation-{{ rec.recommendation|lower }}">
+                                    <div class="card-body text-white">
+                                        <h3>{{ rec.count }}</h3>
+                                        <h5>{{ rec.recommendation }}</h5>
+                                        {% if rec.recommendation == 'BUY' %}
+                                            <i class="fas fa-arrow-up fa-2x"></i>
+                                        {% elif rec.recommendation == 'SELL' %}
+                                            <i class="fas fa-arrow-down fa-2x"></i>
+                                        {% else %}
+                                            <i class="fas fa-minus fa-2x"></i>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-robot fa-3x text-muted mb-3"></i>
+                        <h5 class="text-muted">No Recommendations Today</h5>
+                        <p class="text-muted">AI recommendations will appear here once stock analysis is complete.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Top Stocks Table -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-star me-2"></i>Top Monitored Stocks
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if top_stocks %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Symbol</th>
+                                    <th>Company</th>
+                                    <th>Sector</th>
+                                    <th>Industry</th>
+                                    <th>Market Cap</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for stock in top_stocks %}
+                                <tr>
+                                    <td>
+                                        <strong class="text-primary">{{ stock.symbol }}</strong>
+                                    </td>
+                                    <td>{{ stock.name|truncatechars:30 }}</td>
+                                    <td>
+                                        {% if stock.sector %}
+                                            <span class="badge bg-secondary">{{ stock.sector }}</span>
+                                        {% else %}
+                                            <span class="text-muted">N/A</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ stock.industry|truncatechars:20|default:"N/A" }}</td>
+                                    <td>
+                                        {% if stock.market_cap %}
+                                            ${{ stock.market_cap|floatformat:0 }}
+                                        {% else %}
+                                            <span class="text-muted">N/A</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'stock_analysis' stock.symbol %}" class="btn btn-sm btn-primary">
+                                            <i class="fas fa-chart-line me-1"></i>Analyze
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-chart-line fa-3x text-muted mb-3"></i>
+                        <h5 class="text-muted">No Stocks Available</h5>
+                        <p class="text-muted">Start by adding some stocks to the system using the management command.</p>
+                        <div class="mt-3">
+                            <code class="bg-light p-2 rounded">python manage.py fetch_stock_data AAPL TSLA GOOGL META TSLA</code>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Market Trends Chart -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-chart-area me-2"></i>Market Sentiment Trend
+                </h5>
+            </div>
+            <div class="card-body">
+                <canvas id="sentimentChart" width="400" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const sentimentCtx = document.getElementById('sentimentChart')?.getContext('2d');
+    if (!sentimentCtx) return;  // Prevent JS error if element not found
+
+    const sentimentData = [
+        { x: '2024-01-01', y: 0.2 },
+        { x: '2024-01-02', y: 0.3 },
+        { x: '2024-01-03', y: 0.1 },
+        { x: '2024-01-04', y: 0.4 },
+        { x: '2024-01-05', y: 0.2 },
+        { x: '2024-01-06', y: 0.5 },
+        { x: '2024-01-07', y: 0.3 }
+    ];
+
+    new Chart(sentimentCtx, {
+        type: 'line',
+        data: {
+            datasets: [{
+                label: 'Market Sentiment',
+                data: sentimentData,
+                borderColor: 'rgb(75, 192, 192)',
+                backgroundColor: 'rgba(75, 192, 192, 0.1)',
+                tension: 0.4,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                x: {
+                    type: 'time',
+                    time: {
+                        parser: 'yyyy-MM-dd',
+                        tooltipFormat: 'MMM dd, yyyy',
+                        displayFormats: {
+                            day: 'MMM dd'
+                        }
+                    },
+                    title: {
+                        display: true,
+                        text: 'Date'
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    min: -1,
+                    max: 1,
+                    ticks: {
+                        callback: function(value) {
+                            if (value > 0.1) return 'Positive';
+                            if (value < -0.1) return 'Negative';
+                            return 'Neutral';
+                        }
+                    },
+                    title: {
+                        display: true,
+                        text: 'Sentiment'
+                    }
+                }
+            },
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const value = context.parsed.y;
+                            let sentiment = 'Neutral';
+                            if (value > 0.1) sentiment = 'Positive';
+                            if (value < -0.1) sentiment = 'Negative';
+                            return `Sentiment: ${sentiment} (${value.toFixed(2)})`;
+                        }
+                    }
+                }
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

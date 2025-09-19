@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ stock.symbol }} News Analysis - SPCM{% endblock %}
+
+{% block content %}
+<!-- News Header -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card bg-gradient-primary text-white">
+            <div class="card-body">
+                <h1 class="mb-2">
+                    <i class="fas fa-newspaper me-2"></i>News Analysis: {{ stock.symbol }}
+                </h1>
+                <p class="mb-0">{{ stock.name }} - Sentiment analysis of recent news articles</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Sentiment Statistics -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <i class="fas fa-smile fa-2x text-success mb-2"></i>
+                <h5>Positive</h5>
+                <h3 class="text-success">{{ sentiment_stats.positive }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <i class="fas fa-meh fa-2x text-warning mb-2"></i>
+                <h5>Neutral</h5>
+                <h3 class="text-warning">{{ sentiment_stats.neutral }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <i class="fas fa-frown fa-2x text-danger mb-2"></i>
+                <h5>Negative</h5>
+                <h3 class="text-danger">{{ sentiment_stats.negative }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <i class="fas fa-newspaper fa-2x text-info mb-2"></i>
+                <h5>Total Articles</h5>
+                <h3 class="text-info">{{ news_articles|length }}</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- News Articles -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Recent News Articles</h5>
+                <a href="{% url 'stock_analysis' stock.symbol %}" class="btn btn-sm btn-outline-primary">
+                    <i class="fas fa-arrow-left me-1"></i>Back to Analysis
+                </a>
+            </div>
+            <div class="card-body">
+                {% if news_articles %}
+                    {% for article in news_articles %}
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-10">
+                                        <h6 class="card-title">{{ article.title }}</h6>
+                                        <p class="card-text text-muted">{{ article.summary|truncatewords:30 }}</p>
+                                        <div class="d-flex align-items-center gap-3">
+                                            <small class="text-muted">
+                                                <i class="fas fa-newspaper me-1"></i>{{ article.source }}
+                                            </small>
+                                            <small class="text-muted">
+                                                <i class="fas fa-clock me-1"></i>{{ article.published_at|timesince }} ago
+                                            </small>
+                                            <span class="badge bg-{{ article.impact_score|lower }}">
+                                                {{ article.impact_score }} Impact
+                                            </span>
+                                            {% if article.author %}
+                                                <small class="text-muted">
+                                                    <i class="fas fa-user me-1"></i>{{ article.author }}
+                                                </small>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2 text-center">
+                                        {% if article.sentiment_score %}
+                                            <div class="sentiment-{% if article.sentiment_score > 0.1 %}positive{% elif article.sentiment_score < -0.1 %}negative{% else %}neutral{% endif %}">
+                                                <i class="fas fa-{% if article.sentiment_score > 0.1 %}smile{% elif article.sentiment_score < -0.1 %}frown{% else %}meh{% endif %} fa-2x mb-2"></i>
+                                                <div class="h5">{{ article.sentiment_score|floatformat:2 }}</div>
+                                                <small>
+                                                    {% if article.sentiment_score > 0.1 %}Positive
+                                                    {% elif article.sentiment_score < -0.1 %}Negative
+                                                    {% else %}Neutral{% endif %}
+                                                </small>
+                                            </div>
+                                        {% else %}
+                                            <div class="text-muted">
+                                                <i class="fas fa-question fa-2x mb-2"></i>
+                                                <div class="small">No Score</div>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                {% if article.url %}
+                                    <div class="mt-2">
+                                        <a href="{{ article.url }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-external-link-alt me-1"></i>Read Full Article
+                                        </a>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-newspaper fa-4x text-muted mb-3"></i>
+                        <h4 class="text-muted">No News Articles Found</h4>
+                        <p class="text-muted">No recent news articles are available for {{ stock.symbol }}.</p>
+                        <p class="text-muted">Try running the data collection command:</p>
+                        <code class="bg-light p-2 rounded">python manage.py fetch_stock_data {{ stock.symbol }}</code>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

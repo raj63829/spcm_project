@@ -1,0 +1,485 @@
+{% extends 'base.html' %}
+{% load spcm_filters %}
+
+{% block title %}{{ stock.symbol }} Analysis - SPCM{% endblock %}
+
+{% block content %}
+<!-- Stock Header -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card bg-gradient-primary text-white">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h1 class="mb-1">{{ stock.symbol }}</h1>
+                        <h4 class="mb-2">{{ stock.name }}</h4>
+                        <p class="mb-0">{{ stock.sector }} • {{ stock.industry }}</p>
+                    </div>
+                    <div class="col-md-4 text-md-end">
+                        {% if latest_price %}
+                            <h2 class="mb-1">${{ latest_price.close_price }}</h2>
+                            <p class="mb-0">{{ latest_price.date|date:"M d, Y" }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Key Metrics -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <i class="fas fa-heart fa-2x text-danger mb-2"></i>
+                <h5>Sentiment Score</h5>
+                {% if latest_sentiment %}
+                    <h3 class="sentiment-{% if latest_sentiment.overall_sentiment > 0.1 %}positive{% elif latest_sentiment.overall_sentiment < -0.1 %}negative{% else %}neutral{% endif %}">
+                        {{ latest_sentiment.overall_sentiment|floatformat:2 }}
+                    </h3>
+                    <small class="text-muted">
+                        {% if latest_sentiment.overall_sentiment > 0.1 %}Positive
+                        {% elif latest_sentiment.overall_sentiment < -0.1 %}Negative
+                        {% else %}Neutral{% endif %}
+                    </small>
+                {% else %}
+                    <h3 class="text-muted">N/A</h3>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <i class="fas fa-chart-line fa-2x text-primary mb-2"></i>
+                <h5>RSI</h5>
+                {% if latest_technical %}
+                    <h3 class="{% if latest_technical.rsi > 70 %}text-danger{% elif latest_technical.rsi < 30 %}text-success{% else %}text-warning{% endif %}">
+                        {{ latest_technical.rsi|floatformat:1 }}
+                    </h3>
+                    <small class="text-muted">
+                        {% if latest_technical.rsi > 70 %}Overbought
+                        {% elif latest_technical.rsi < 30 %}Oversold
+                        {% else %}Neutral{% endif %}
+                    </small>
+                {% else %}
+                    <h3 class="text-muted">N/A</h3>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <i class="fas fa-robot fa-2x text-success mb-2"></i>
+                <h5>AI Recommendation</h5>
+                {% if latest_recommendation %}
+                    <span class="badge recommendation-{{ latest_recommendation.recommendation|lower }} text-white fs-6 mb-2">
+                        {{ latest_recommendation.recommendation }}
+                    </span>
+                    <div>
+                        <small class="text-muted">{{ latest_recommendation.confidence_score|floatformat:0 }}% Confidence</small>
+                    </div>
+                {% else %}
+                    <h3 class="text-muted">N/A</h3>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <i class="fas fa-volume-up fa-2x text-info mb-2"></i>
+                <h5>Volume</h5>
+                {% if latest_price %}
+                    <h3 class="text-primary">{{ latest_price.volume|floatformat:0 }}</h3>
+                    <small class="text-muted">Shares</small>
+                {% else %}
+                    <h3 class="text-muted">N/A</h3>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Analysis Tabs -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <ul class="nav nav-tabs card-header-tabs" id="analysisTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="chart-tab" data-bs-toggle="tab" data-bs-target="#chart" type="button">
+                            <i class="fas fa-chart-area me-1"></i>Price Chart
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="technical-tab" data-bs-toggle="tab" data-bs-target="#technical" type="button">
+                            <i class="fas fa-cogs me-1"></i>Technical Analysis
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="sentiment-tab" data-bs-toggle="tab" data-bs-target="#sentiment" type="button">
+                            <i class="fas fa-comments me-1"></i>Sentiment Analysis
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="news-tab" data-bs-toggle="tab" data-bs-target="#news" type="button">
+                            <i class="fas fa-newspaper me-1"></i>News Analysis
+                        </button>
+                    </li>
+                </ul>
+            </div>
+            <div class="card-body">
+                <div class="tab-content" id="analysisTabContent">
+                    <!-- Price Chart Tab -->
+                    <div class="tab-pane fade show active" id="chart" role="tabpanel">
+                        <div class="row">
+                            <div class="col-lg-6 mb-4">
+                                <h5>Price Chart - {{ stock.symbol }}</h5>
+                                <div class="chart-container">
+                                    <canvas id="priceChart"></canvas>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 mb-4">
+                                <h5>Volume Chart</h5>
+                                <div class="chart-container">
+                                    <canvas id="volumeChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Technical Analysis Tab -->
+                    <div class="tab-pane fade" id="technical" role="tabpanel">
+                        {% if latest_technical %}
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h5>Moving Averages</h5>
+                                    <table class="table table-sm">
+                                        <tr>
+                                            <td>SMA 20</td>
+                                            <td>${{ latest_technical.sma_20|floatformat:2 }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>SMA 50</td>
+                                            <td>${{ latest_technical.sma_50|floatformat:2 }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>SMA 200</td>
+                                            <td>${{ latest_technical.sma_200|floatformat:2 }}</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <div class="col-md-6">
+                                    <h5>Oscillators</h5>
+                                    <table class="table table-sm">
+                                        <tr>
+                                            <td>RSI</td>
+                                            <td>{{ latest_technical.rsi|floatformat:2 }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>MACD</td>
+                                            <td>{{ latest_technical.macd|floatformat:4 }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>MACD Signal</td>
+                                            <td>{{ latest_technical.macd_signal|floatformat:4 }}</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        {% else %}
+                            <div class="text-center py-4">
+                                <i class="fas fa-chart-line fa-3x text-muted mb-3"></i>
+                                <h5 class="text-muted">No Technical Data Available</h5>
+                                <p class="text-muted">Technical indicators will be calculated once sufficient price data is available.</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Sentiment Analysis Tab -->
+                    <div class="tab-pane fade" id="sentiment" role="tabpanel">
+                        {% if latest_sentiment %}
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h5>Sentiment Breakdown</h5>
+                                    <div class="mb-3">
+                                        <label class="form-label">Overall Sentiment</label>
+                                        <div class="progress">
+                                            <div class="progress-bar bg-{% if latest_sentiment.overall_sentiment > 0 %}success{% else %}danger{% endif %}" 
+                                                 style="width: {{ latest_sentiment.overall_sentiment|add_float:1|mul:50 }}%">
+                                                {{ latest_sentiment.overall_sentiment|floatformat:2 }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">News Sentiment</label>
+                                        <div class="progress">
+                                            <div class="progress-bar bg-info" 
+                                                 style="width: {{ latest_sentiment.news_sentiment|add_float:1|mul:50 }}%">
+                                                {{ latest_sentiment.news_sentiment|floatformat:2 }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <h5>Mention Statistics</h5>
+                                    <div class="row text-center">
+                                        <div class="col-6">
+                                            <h3 class="text-primary">{{ latest_sentiment.news_mentions }}</h3>
+                                            <small class="text-muted">News Mentions</small>
+                                        </div>
+                                        <div class="col-6">
+                                            <h3 class="text-success">{{ latest_sentiment.social_mentions }}</h3>
+                                            <small class="text-muted">Social Mentions</small>
+                                        </div>
+                                    </div>
+                                    
+                                    {% if latest_sentiment.trending_keywords %}
+                                        <h6 class="mt-3">Trending Keywords</h6>
+                                        <div class="d-flex flex-wrap gap-1">
+                                            {% for keyword in latest_sentiment.trending_keywords %}
+                                                <span class="badge bg-secondary">{{ keyword }}</span>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% else %}
+                            <div class="text-center py-4">
+                                <i class="fas fa-comments fa-3x text-muted mb-3"></i>
+                                <h5 class="text-muted">No Sentiment Data Available</h5>
+                                <p class="text-muted">Sentiment analysis will be available once news data is collected.</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- News Analysis Tab -->
+                    <div class="tab-pane fade" id="news" role="tabpanel">
+                        {% if recent_news %}
+                            <div class="row">
+                                {% for article in recent_news %}
+                                    <div class="col-12 mb-3">
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <div class="d-flex justify-content-between align-items-start">
+                                                    <div class="flex-grow-1">
+                                                        <h6 class="card-title">{{ article.title }}</h6>
+                                                        <p class="card-text text-muted small">{{ article.summary|truncatewords:20 }}</p>
+                                                        <div class="d-flex align-items-center gap-3">
+                                                            <small class="text-muted">
+                                                                <i class="fas fa-newspaper me-1"></i>{{ article.source }}
+                                                            </small>
+                                                            <small class="text-muted">
+                                                                <i class="fas fa-clock me-1"></i>{{ article.published_at|timesince }} ago
+                                                            </small>
+                                                            <span class="badge bg-{{ article.impact_score|lower }}">{{ article.impact_score }} Impact</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="text-end">
+                                                        {% if article.sentiment_score %}
+                                                            <div class="sentiment-{% if article.sentiment_score > 0.1 %}positive{% elif article.sentiment_score < -0.1 %}negative{% else %}neutral{% endif %}">
+                                                                <i class="fas fa-{% if article.sentiment_score > 0.1 %}smile{% elif article.sentiment_score < -0.1 %}frown{% else %}meh{% endif %} fa-lg"></i>
+                                                                <div class="small">{{ article.sentiment_score|floatformat:2 }}</div>
+                                                            </div>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            <div class="text-center">
+                                <a href="{% url 'news_analysis' stock.symbol %}" class="btn btn-primary">
+                                    <i class="fas fa-newspaper me-2"></i>View All News
+                                </a>
+                            </div>
+                        {% else %}
+                            <div class="text-center py-4">
+                                <i class="fas fa-newspaper fa-3x text-muted mb-3"></i>
+                                <h5 class="text-muted">No Recent News</h5>
+                                <p class="text-muted">No recent news articles found for this stock.</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add to Portfolio Button (if user is authenticated) -->
+{% if user.is_authenticated %}
+<div class="row mt-4">
+    <div class="col-12 text-center">
+        <a href="{% url 'portfolio_list' %}" class="btn btn-success btn-lg">
+            <i class="fas fa-plus me-2"></i>Add to Portfolio
+        </a>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Price Chart Data
+    const priceData = [
+        {% for price in price_history reversed %}
+        {
+            x: '{{ price.date|date:"Y-m-d" }}',
+            y: {{ price.close_price }}
+        }{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ];
+
+    // Volume Chart Data
+    const volumeData = [
+        {% for price in price_history reversed %}
+        {
+            x: '{{ price.date|date:"Y-m-d" }}',
+            y: {{ price.volume }}
+        }{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ];
+
+    // Price Chart
+    const priceCtx = document.getElementById('priceChart').getContext('2d');
+    new Chart(priceCtx, {
+        type: 'line',
+        data: {
+            datasets: [{
+                label: '{{ stock.symbol }} Price',
+                data: priceData,
+                borderColor: 'rgb(75, 192, 192)',
+                backgroundColor: 'rgba(75, 192, 192, 0.1)',
+                tension: 0.1,
+                fill: true,
+                pointRadius: 3,
+                pointHoverRadius: 5
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: {
+                intersect: false,
+                mode: 'index'
+            },
+            scales: {
+                x: {
+                    type: 'time',
+                    time: {
+                        unit: 'day',
+                        displayFormats: {
+                            day: 'MMM dd'
+                        }
+                    },
+                    title: {
+                        display: true,
+                        text: 'Date'
+                    }
+                },
+                y: {
+                    beginAtZero: false,
+                    title: {
+                        display: true,
+                        text: 'Price ($)'
+                    },
+                    ticks: {
+                        callback: function(value) {
+                            return '$' + value.toFixed(2);
+                        }
+                    }
+                }
+            },
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return '{{ stock.symbol }}: $' + context.parsed.y.toFixed(2);
+                        }
+                    }
+                },
+                legend: {
+                    display: true
+                }
+            }
+        }
+    });
+
+    // Volume Chart
+    const volumeCtx = document.getElementById('volumeChart').getContext('2d');
+    new Chart(volumeCtx, {
+        type: 'bar',
+        data: {
+            datasets: [{
+                label: 'Volume',
+                data: volumeData,
+                backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: {
+                intersect: false,
+                mode: 'index'
+            },
+            scales: {
+                x: {
+                    type: 'time',
+                    time: {
+                        unit: 'day',
+                        displayFormats: {
+                            day: 'MMM dd'
+                        }
+                    },
+                    title: {
+                        display: true,
+                        text: 'Date'
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Volume'
+                    },
+                    ticks: {
+                        callback: function(value) {
+                            return (value / 1000000).toFixed(1) + 'M';
+                        }
+                    }
+                }
+            },
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return 'Volume: ' + context.parsed.y.toLocaleString();
+                        }
+                    }
+                },
+                legend: {
+                    display: true
+                }
+            }
+        }
+    });
+
+    console.log('Charts initialized with data:', {
+        priceData: priceData,
+        volumeData: volumeData
+    });
+});
+</script>
+{% endblock %}
