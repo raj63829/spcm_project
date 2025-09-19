@@ -10,12 +10,12 @@ from decouple import config
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get("+%2a^l2b7i&5+r6nyb*s7$omn8f_num^i^1!k*5yz8%200e&&&")
+SECRET_KEY = config("SECRET_KEY", default="unsafe-secret-key")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = ["*", "spcmproject-production.up.railway.app"]
 
 # Application definition
 INSTALLED_APPS = [
@@ -70,18 +70,10 @@ DATABASES = {
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
 # Internationalization
@@ -90,7 +82,6 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
-# Static files (CSS, JavaScript, Images)
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
@@ -101,7 +92,6 @@ STORAGES = {
         "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
     },
 }
-
 
 # If you also want to collect static from /static folder inside project
 STATICFILES_DIRS = [
@@ -116,8 +106,6 @@ MEDIA_ROOT = BASE_DIR / 'media'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # API Keys - Get free API keys from:
-# Alpha Vantage: https://www.alphavantage.co/support/#api-key
-# NewsAPI: https://newsapi.org/register
 ALPHA_VANTAGE_API_KEY = config('ALPHA_VANTAGE_API_KEY', default='')
 NEWS_API_KEY = config('NEWS_API_KEY', default='')
 TWITTER_BEARER_TOKEN = config('TWITTER_BEARER_TOKEN', default='')
@@ -132,26 +120,18 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 20
 }
 
-# Logging
+# Logging (console only → prevents Railway spam/log file loss)
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
     'handlers': {
-        'file': {
-            'level': 'INFO',
-            'class': 'logging.FileHandler',
-            'filename': BASE_DIR / 'spcm.log',
-        },
         'console': {
-            'level': 'INFO',
+            'level': 'WARNING',   # only show warnings & errors
             'class': 'logging.StreamHandler',
         },
     },
-    'loggers': {
-        'spcm_app': {
-            'handlers': ['file', 'console'],
-            'level': 'INFO',
-            'propagate': True,
-        },
+    'root': {
+        'handlers': ['console'],
+        'level': 'WARNING',
     },
 }
